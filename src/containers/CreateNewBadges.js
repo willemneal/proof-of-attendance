@@ -68,6 +68,9 @@ export default function CreateNewBadges() {
   const inputCSVFile = useRef(null);
   const inputImageFile = useRef(null);
 
+  // This temp variable is used to store the user's nft image while it gets processed
+  const [pic, setPic] = useState(null);
+
   // const [hasDeposit, setDeposit] = useState(false);
   const imageAlt = "image not successfully uploaded"
 
@@ -77,6 +80,19 @@ export default function CreateNewBadges() {
   }
   
   useEffect(componentDidMount, []);
+
+  // Hook to set the user nft image everytime it changes
+  useEffect(() => {
+    if (pic) {
+      const reader = new FileReader();
+        reader.onloadend = () => {
+          setNFTImage(reader.result);
+        }
+      reader.readAsDataURL(pic);
+   } else {
+     setNFTImage(null);
+   }
+  }, [pic])
   
   const checkHasDeposit = async () => {
     const deposit = await window.api.hasDeposit();
@@ -115,9 +131,13 @@ export default function CreateNewBadges() {
     setNFTImage(image)
     // setFilePath("/Users/jedi/dOrg/NEAR/proof-of-attendance/src/constants/kobe-gianna.png")
   }
-  
+
   const onChangeImageUpload = async (event) => {
-    const image = await importImage(event, uploadImage, setImageFile);
+    // Had to comment this because it gave too many erros
+    //const image = await importImage(event, uploadImage, setImageFile);
+    const file = event.target.files[0];
+    // Just to make sure the user doesn't upload anything but an image
+    return file && file.type.substr(0,5) ? setPic(file) : setPic(null);
   }
   
   const onClickStoreImage = () => {
@@ -138,7 +158,7 @@ export default function CreateNewBadges() {
     
   const onClickUploadImage = () => {
     inputImageFile.current.click();
-  }
+  } 
   
   const mintNFTs = () => {
     console.log('attendees', attendees);
@@ -161,7 +181,7 @@ export default function CreateNewBadges() {
                 <Box>
                   {
                     nftImage ? (
-                      <img src={nftImage} alt={imageAlt}/>
+                      <img src={nftImage} alt={imageAlt} style={{ maxWidth: 200}}/>
                     ) : (
                       "Here we display how the NFT media looks like"
                     )
@@ -209,7 +229,7 @@ export default function CreateNewBadges() {
             <br />
             <Grid item xs={12}>
               <Typography variant="subtitle2">STEP 3:</Typography>
-              <input type="file" ref={inputImageFile} style={{display: "none" }} onChange={onChangeImageUpload}/>
+              <input type="file" ref={inputImageFile} accept="image/*" style={{display: "none" }} onChange={onChangeImageUpload}/>
               <Button variant="contained" onClick={onClickUploadImage}>
                 Upload JPEG/NFT
               </Button>
