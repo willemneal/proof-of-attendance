@@ -17,10 +17,18 @@ node_modules/*
 
 # misc
 .DS_Store
-.env.local
+
+.env
 .env.development.local
-.env.test.local
+.env.local
+.env.mainnet.local
 .env.production.local
+.env.test.local
+.env.testnet.local
+.env.betanet.local
+.env.ci-betanet.local
+.env.ci.local
+
 
 npm-debug.log*
 yarn-debug.log*
