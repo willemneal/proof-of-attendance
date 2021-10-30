@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-
-} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import {
   Home,
@@ -12,83 +7,66 @@ import {
   // BadgesHome,
   CreateNewBadges,
   BadgesList,
-  
 } from "./";
 
-import {
-  Notification,
-  AppHeader,
+import { Notification, AppHeader } from "../components";
 
-} from "../components";
-
-import {
-  networkId, 
-  
-} from "../utils/auth"
+import { networkId } from "../utils/auth";
 
 export default function AppRouter() {
   const [notification, showNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
-  
+
   const componentDidMount = () => {
-    if(window.walletConnection.isSignedIn()) {
+    if (window.walletConnection.isSignedIn()) {
       showNotification(true);
       setNotificationMessage("You are logged ");
-      
+
       setTimeout(() => {
         showNotification(false);
-      }, 1000)
+      }, 1000);
     }
-  }
+  };
 
   useEffect(componentDidMount, []);
 
   const isSignedIn = window.walletConnection.isSignedIn();
 
   const RenderNotification = () => {
-    return notification && <Notification message={notificationMessage} networkId={networkId} />
-  }
+    return (
+      notification && (
+        <Notification message={notificationMessage} networkId={networkId} />
+      )
+    );
+  };
 
   const RenderAppHeader = () => {
-    return window.walletConnection.isSignedIn() && (<AppHeader />) 
-  }
+    return window.walletConnection.isSignedIn() && <AppHeader />;
+  };
 
-  const RenderRouter = () => {
-    return (
-      <Router> 
-        { window.walletConnection.isSignedIn() && (<AppHeader />)  }
-        <Switch>
-          <Route path={"/"} exact>
+  return (
+    <>
+      {isSignedIn ? (
+        <Router>
+          {window.walletConnection.isSignedIn() && <AppHeader />}
+          <Switch>
+            <Route path={"/"} exact>
               <Home />
               <RenderNotification />
-          </Route>
-          
-          <Route path={"/new"}>
-           <CreateNewBadges />
-          </Route>
-          
-          <Route path={"/badges/:account"}>
-           <BadgesList />
-          </Route>
-        </Switch>
-      </Router>
-    )
-  }
+            </Route>
 
-  const RenderAppRouter = () => {
-    return (
-      <>
-        {
-          isSignedIn ? (
-            <RenderRouter />
-          ) :  
-          (
-            <Landing />
-          )
-        }
-      </>
-    )
-  }
+            <Route path={"/new"}>
+              <CreateNewBadges />
+            </Route>
 
-  return <RenderAppRouter />
+            <Route path={"/badges/:account"}>
+              <BadgesList />
+            </Route>
+          </Switch>
+        </Router>
+      ) : (
+        <Landing />
+      )}
+    </>
+  );
 }
